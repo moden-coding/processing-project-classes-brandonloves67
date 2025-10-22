@@ -17,11 +17,16 @@ public class App extends PApplet {
   boolean left, up, down, right;
   boolean won = false;
   boolean startScreen = true;
-  PImage ballImage;
-  
+  boolean colorScreen = false;
+  int newSpeed = 2;
+  String difficulty = "";
+
+  int r = 0;
+  int g = 0;
+  int b = 255;
 
   public void setup() {
-    ballImage = loadImage("brandon.png");
+
   }
 
   public void settings() {
@@ -34,14 +39,34 @@ public class App extends PApplet {
       fill(255);
       textSize(80);
       text("Maze Game", 70, 100);
-      textSize(25);
-      text("Press 1 to play easy", 90, 150);
-      textSize(25);
-      text("Press 2 to play hard", 90, 180);
-      textSize(18);
-      text("Use arrow keys to move",90, 220 );
-      return; 
+      textSize(30);
+      text("Press 1 to play", 90, 150);
+      textSize(30);
+      text("Press 2 to change color", 90, 180);
+      fill(255,0,0);
+      textSize(29);
+      text("How to play:", 90, 240);
+      textSize(20);
+      text("Use arrows to move", 90, 260);
+    textSize(20);
+    text("Press 's' to speed up, press 'd' to slow down", 90, 280);
+
+      return;
     }
+    if (colorScreen) {
+      fill(255);
+      textSize(50);
+      text("Choose Your Color", 60, 100);
+      textSize(30);
+      text("Press space bar for new color", 70, 150);
+      textSize(20);
+      text("Press 1 to start game", 80, 180);
+      text("Press 3 to return home", 80, 210);
+      fill(r, g, b);
+      circle(250, 250, size);
+      return;
+    }
+
     time += 1;
     background(0);
 
@@ -59,18 +84,31 @@ public class App extends PApplet {
     rect(360, 80, 60, 500);
     fill(0, 255, 0);
     rect(420, 450, 40, 550);
-    
+
     fill(0);
     rect(15, 400, 100, 70);
 
-    imageMode(CENTER);
-    image(ballImage, x, y, size, size);
-    
+    fill(r, g, b);
+    circle(x, y, size);
+
+    fill(255, 255, 255);
+    textSize(30);
+    text("Press 3 to return home", 120, 450);
 
     fill(255, 255, 255);
     textSize(45);
-    text("wins:" + wins, 200, 400, 100);
-    
+    text("wins:" + wins, 200, 400);
+
+
+    if (newSpeed == 1) difficulty = "Slow";
+   if (newSpeed == 2) difficulty = "Medium";
+   if (newSpeed == 3) difficulty = "Fast";
+  if (newSpeed == 4) difficulty = "Extra Fast";
+  
+  fill(255);
+  textSize(30);
+  text("Speed: " + difficulty, 10, 30);
+
     if (!won) {
       if (left == true) {
         x -= speed;
@@ -93,7 +131,7 @@ public class App extends PApplet {
 
       if (time % 300 == 0) {
         won = false;
-
+        // asked sam fine for some help on this part
       }
     }
 
@@ -145,8 +183,6 @@ public class App extends PApplet {
   // a specific color it does somthing, the green makes a text and
   // red makes ball go back to begining.
 
- 
-
   public void keyPressed() {
     if (keyCode == UP) {
       up = true;
@@ -157,11 +193,62 @@ public class App extends PApplet {
     } else if (keyCode == RIGHT) {
       right = true;
     }
-       if (startScreen && key == '1') {
+
+    if (startScreen && key == '1') {
+      startScreen = false;
+      colorScreen = false;
+      x = xstart;
+      y = ystart;
+      return;
+    }
+
+    if (colorScreen && key == ' ') {
+      r = (int) random(0, 255);
+      g = (int) random(0, 255);
+      b = (int) random(0, 255);
+      return;
+    }
+
+    if (colorScreen && key == '1') {
+      colorScreen = false;
       startScreen = false;
       x = xstart;
       y = ystart;
       return;
+    }
+
+    if (key == '3') {
+      startScreen = true;
+      colorScreen = false;
+    }
+
+    if (startScreen && key == '2') {
+      startScreen = false;
+      colorScreen = true;
+      return;
+    }
+    if (!startScreen && !colorScreen)
+      
+    {
+      if (key == 's') {
+        newSpeed++;
+         speed = newSpeed;
+        if (newSpeed > 4) {
+          newSpeed = 4;
+        }
+      }
+    }
+
+    if (!startScreen && !colorScreen)
+      
+    {
+      if (key == 'd') {
+        newSpeed--;
+         speed = newSpeed;
+      }
+      if (newSpeed < 1) {
+        newSpeed = 1;
+      }
     }
 
   }
