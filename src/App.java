@@ -7,24 +7,29 @@ public class App extends PApplet {
 
   float x = 40;
   float y = 460;
-  float size = 27;
+  float size = 20;
   float speed = 2;
   float xstart = 60;
   float ystart = 440;
-  int deaths, prevDeaths = 0;
+  int deaths=0;
+  int prevDeaths = 0;
   int wins = 0;
   int time = 0;
+  int winTimer = 0;
   boolean left, up, down, right;
   boolean won = false;
   boolean startScreen = true;
   boolean colorScreen = false;
-  boolean secretWin=false;
   int newSpeed = 2;
   String difficulty = "";
+
 
   int r = 0;
   int g = 0;
   int b = 255;
+
+
+  
 
   public void setup() {
 
@@ -67,15 +72,7 @@ public class App extends PApplet {
       circle(250, 250, size);
       return;
     }
-    if (secretWin) {
-      background(255, 0, 0);
-
-    textSize(80);
-    fill(random(255), random(255), random(255));
-    text("BOO!!!", 150, 200);
-  return;
- 
-    }
+    
 
     time += 1;
     background(0);
@@ -141,24 +138,25 @@ public class App extends PApplet {
       fill(255, 255, 255);
       textSize(45);
       text("You won after " + prevDeaths + " deaths!", 25, 250);
-
-      if (time % 300 == 0) {
+      winTimer++;
+      if (winTimer > 180) {
         won = false;
-        // asked sam fine for some help on this part
+        winTimer = 0;
       }
+      // sam fine helped me with this
     }
 
     int currentColor = get((int) x, (int) y);
     // top
-    currentColor = get((int) x, (int) (y - size / 2 - 1));
+    currentColor = get((int) x, (int) (y - size / 2));
     if (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0) {
       x = xstart;
       y = ystart;
       deaths++;
-
     }
+
     // bottum
-    currentColor = get((int) x, (int) (y + size / 2 + 1));
+    currentColor = get((int) x, (int) (y + size / 2));
     if (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0) {
       x = xstart;
       y = ystart;
@@ -166,7 +164,7 @@ public class App extends PApplet {
 
     }
     // side
-    currentColor = get((int) (x - size / 2 - 1), (int) y);
+    currentColor = get((int) (x - size / 2), (int) y);
     if (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0) {
       x = xstart;
       y = ystart;
@@ -174,7 +172,7 @@ public class App extends PApplet {
 
     }
     // side
-    currentColor = get((int) (x + size / 2 + 1), (int) y);
+    currentColor = get((int) (x + size / 2), (int) y);
     if (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0) {
       x = xstart;
       y = ystart;
@@ -182,7 +180,7 @@ public class App extends PApplet {
 
     }
     // corner
-    currentColor = get((int) (x - size / 2 - 1), (int) (y - size / 2 - 1));
+    currentColor = get((int) (x - size / 2), (int) (y - size / 2));
     if (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0) {
       x = xstart;
       y = ystart;
@@ -190,44 +188,40 @@ public class App extends PApplet {
 
     }
     // corner
-    currentColor = get((int) (x + size / 2 + 1), (int) (y - size / 2 - 1));
+    currentColor = get((int) (x + size / 2), (int) (y - size / 2));
     if (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0) {
       x = xstart;
       y = ystart;
-      deaths++;}
-      // corner
-      currentColor = get((int) (x - size / 2 - 1), (int) (y + size / 2 + 1));
-      if (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0) {
-        x = xstart;
-        y = ystart;
-        deaths++;
+      deaths++;
+    }
+    // corner
+    currentColor = get((int) (x - size / 2), (int) (y + size / 2));
+    if (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0) {
+      x = xstart;
+      y = ystart;
+      deaths++;
 
-      }
-      // corner
-      currentColor = get((int) (x + size / 2 + 1), (int) (y + size / 2 + 1));
-      if (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0) {
-        x = xstart;
-        y = ystart;
-        deaths++;
+    }
+    // corner
+    currentColor = get((int) (x + size / 2), (int) (y + size / 2));
+    if (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0) {
+      x = xstart;
+      y = ystart;
+      deaths++;
 
-      }
-      // win
-      currentColor = get((int) (x), (int) (y + size / 2 + 1));
-      if (green(currentColor) == 255 && red(currentColor) == 0 && blue(currentColor) == 0) {
-        wins++;
-        won = true;
-        x = xstart;
-        y = ystart;
-        prevDeaths = deaths;
-        deaths = 0;
-      }
-      if (x > 45 && x < 55 && y > 435 && y < 445) { 
-    secretWin = true;
-}
-      
-      }
-    
-  
+    }
+    // win
+    currentColor = get((int) (x), (int) (y + size / 2));
+    if (green(currentColor) == 255 && red(currentColor) == 0 && blue(currentColor) == 0) {
+      wins++;
+      won = true;
+      x = xstart;
+      y = ystart;
+      prevDeaths = deaths;
+      deaths = 0;
+      winTimer = 0;
+    }
+  }
 
   // used chat gpt for only the part where when the ball touches
   // a specific color it does somthing, the green makes a text and
@@ -299,10 +293,6 @@ public class App extends PApplet {
       if (newSpeed < 1) {
         newSpeed = 1;
       }
-    }
-    if (secretWin=true && key == ' ' ) {
-      x = xstart;
-      y = ystart;
     }
 
   }
