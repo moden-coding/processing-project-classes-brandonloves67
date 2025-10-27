@@ -1,9 +1,9 @@
 import processing.core.*;
-
 public class App extends PApplet {
   public static void main(String[] args) {
     PApplet.main("App");
   }
+
 
   float x = 40;
   float y = 460;
@@ -22,11 +22,19 @@ public class App extends PApplet {
   boolean colorScreen = false;
   int newSpeed = 2;
   String difficulty = "";
-
-
   int r = 0;
   int g = 0;
   int b = 255;
+  boolean challengeMode = false;
+  int challengeTime = 600; 
+  int challengeTimer = 0;
+  boolean challengeOver=false;
+  boolean challengeWin=false;
+
+
+   
+
+
 
 
   
@@ -49,13 +57,14 @@ public class App extends PApplet {
       text("Press 1 to play", 90, 150);
       textSize(30);
       text("Press 2 to change color", 90, 180);
+      text("Press 4 for Challenge Mode", 90, 210);
       fill(255, 0, 0);
       textSize(29);
-      text("How to play:", 90, 240);
+      text("How to play:", 90, 260);
       textSize(20);
-      text("Use arrows to move", 90, 260);
+      text("Use arrows to move", 90, 280);
       textSize(20);
-      text("Press 's' to speed up, press 'd' to slow down", 90, 280);
+      text("Press 's' to speed up, press 'd' to slow down", 90, 300);
 
       return;
     }
@@ -72,6 +81,26 @@ public class App extends PApplet {
       circle(250, 250, size);
       return;
     }
+    if(challengeOver){
+    background(0);
+    fill(255,0,0);
+    textSize(60);
+    text("Time up!", 50, 100);
+    fill(255,0,0);
+   textSize(35);
+   text("Press space to try again", 50, 160);
+     return;
+}
+if (challengeWin) {
+   background(0);
+    fill(0,255,0);
+    textSize(60);
+    text("You won!", 50, 100);
+    fill(0,255,0);
+   textSize(35);
+   text("Press space to play again", 50, 160);
+     return;
+}
     
 
     time += 1;
@@ -106,6 +135,8 @@ public class App extends PApplet {
     textSize(45);
     text("wins:" + wins, 200, 400);
 
+
+
     if (newSpeed == 1)
       difficulty = "Slow";
     if (newSpeed == 2)
@@ -119,7 +150,22 @@ public class App extends PApplet {
     textSize(30);
     text("Speed: " + difficulty, 10, 30);
 
-    if (!won) {
+    if (challengeMode) {
+      challengeTimer--;
+      fill(255);
+      textSize(28);
+      text("Time: " + (challengeTimer / 60), 400, 35);
+
+      if (challengeTimer <= 0) {
+        challengeMode=false;
+        challengeOver=true;
+        x = xstart;
+        y = ystart;
+        deaths++;}}
+
+  
+
+    if (!startScreen && !colorScreen && !challengeOver) {
       if (left == true) {
         x -= speed;
       }
@@ -133,8 +179,8 @@ public class App extends PApplet {
         x += speed;
       }
     }
-    if (won) {
-
+    if (won && !challengeWin && !challengeMode) {
+  
       fill(255, 255, 255);
       textSize(45);
       text("You won after " + prevDeaths + " deaths!", 25, 250);
@@ -220,6 +266,10 @@ public class App extends PApplet {
       prevDeaths = deaths;
       deaths = 0;
       winTimer = 0;
+      if (challengeMode) {
+        challengeMode=false;
+        challengeWin=true;
+      }
     }
   }
 
@@ -237,6 +287,17 @@ public class App extends PApplet {
     } else if (keyCode == RIGHT) {
       right = true;
     }
+    
+    if (challengeOver && key == ' ' ) {
+      challengeOver=false;
+      challengeMode=true;
+      challengeTimer=challengeTime;
+      x=xstart;
+      y=ystart;
+      return;
+
+
+    }
 
     if (startScreen && key == '1') {
       startScreen = false;
@@ -245,11 +306,28 @@ public class App extends PApplet {
       y = ystart;
       return;
     }
+    if (startScreen && key == '4') {
+    startScreen = false;
+    colorScreen = false;
+    challengeMode = true;
+    challengeTimer = challengeTime; 
+    x = xstart;
+    y = ystart;
+}
 
     if (colorScreen && key == ' ') {
       r = (int) random(0, 255);
       g = (int) random(0, 255);
       b = (int) random(0, 255);
+      return;
+    }
+    if (challengeWin && key==' ') {
+      challengeWin=false;
+      won=false;
+      challengeMode=true;
+      challengeTimer=challengeTime;
+      x=xstart;
+      y=ystart;
       return;
     }
 
@@ -263,7 +341,12 @@ public class App extends PApplet {
 
     if (key == '3') {
       startScreen = true;
-      colorScreen = false;
+      colorScreen = false; 
+      challengeMode = false;
+      challengeWin = false;
+      challengeOver = false;
+      wins = 0;
+      return;
     }
 
     if (startScreen && key == '2') {
