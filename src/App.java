@@ -122,7 +122,7 @@ if (challengeWin) {
     rect(420, 450, 40, 550);
 
     fill(0);
-    rect(15, 400, 100, 70);
+    rect(15, 400, 100, 90);
 
     fill(r, g, b);
     circle(x, y, size);
@@ -264,7 +264,7 @@ if (challengeWin) {
       x = xstart;
       y = ystart;
       prevDeaths = deaths;
-      deaths = 0;
+      deaths = 0;         
       winTimer = 0;
       if (challengeMode) {
         challengeMode=false;
@@ -346,6 +346,7 @@ if (challengeWin) {
       challengeWin = false;
       challengeOver = false;
       wins = 0;
+      deaths=0;
       return;
     }
 
