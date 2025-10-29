@@ -1,43 +1,47 @@
 import processing.core.*;
+
 public class App extends PApplet {
   public static void main(String[] args) {
     PApplet.main("App");
   }
 
+  float x = 40; // the x position of ball
+  float y = 460; // the y position of ball
+  float size = 20; // size of ball
+  float speed = 2; // starting speed of ball
+  float xstart = 60; // starting x positiion of ball
+  float ystart = 440; // starting y positiion of ball
 
-  float x = 40;
-  float y = 460;
-  float size = 20;
-  float speed = 2;
-  float xstart = 60;
-  float ystart = 440;
-  int deaths=0;
-  int prevDeaths = 0;
-  int wins = 0;
-  int time = 0;
-  int winTimer = 0;
-  boolean left, up, down, right;
-  boolean won = false;
-  boolean startScreen = true;
-  boolean colorScreen = false;
-  int newSpeed = 2;
-  String difficulty = "";
+  int deaths = 0; // # of deaths
+  int prevDeaths = 0; // # of previos deaths
+  int wins = 0; // # of wins
+  int winTimer = 0; // time stopped after winninng
+  boolean won = false; // tracking weather the player won
+
+  boolean left, up, down, right; // tracking which arrows are pressed
+
+  boolean startScreen = true; // the intro screen
+  boolean colorScreen = false; // the screen where u change color
+  boolean challengeMode = false; // the challenge mode
+  boolean buildMode = false; // Build mode
+
+  int newSpeed = 2; // new speed after you press s or d
+  String difficulty = ""; // the speed it displays
+
+  // color of circle
   int r = 0;
   int g = 0;
   int b = 255;
-  boolean challengeMode = false;
-  int challengeTime = 600; 
-  int challengeTimer = 0;
-  boolean challengeOver=false;
-  boolean challengeWin=false;
 
+  int challengeTime = 1000; // amount of time u have to complete challenge time (frames)
+  int challengeTimer = 0; // timer for the challenge time
+  boolean challengeOver = false; // when you lose the challenge
+  boolean challengeWin = false; // when you win the challenge
 
-   
-
-
-
-
-  
+  float linex = 100;
+  float liney = 100;
+  float linew = 80;
+  float lineh = 10;
 
   public void setup() {
 
@@ -48,6 +52,7 @@ public class App extends PApplet {
   }
 
   public void draw() {
+    // the start screen
     background(0);
     if (startScreen) {
       fill(255);
@@ -68,6 +73,7 @@ public class App extends PApplet {
 
       return;
     }
+    // screen to change you color
     if (colorScreen) {
       fill(255);
       textSize(50);
@@ -81,29 +87,55 @@ public class App extends PApplet {
       circle(250, 250, size);
       return;
     }
-    if(challengeOver){
-    background(0);
-    fill(255,0,0);
-    textSize(60);
-    text("Time up!", 50, 100);
-    fill(255,0,0);
-   textSize(35);
-   text("Press space to try again", 50, 160);
-     return;
-}
-if (challengeWin) {
-   background(0);
-    fill(0,255,0);
-    textSize(60);
-    text("You won!", 50, 100);
-    fill(0,255,0);
-   textSize(35);
-   text("Press space to play again", 50, 160);
-     return;
-}
-    
+    // what happens when you lose challenge
+    if (challengeOver) {
+      background(0);
+      fill(255, 0, 0);
+      textSize(60);
+      text("Time up!", 50, 100);
+      fill(255, 0, 0);
+      textSize(35);
+      text("Press space to try again", 50, 160);
+      return;
+    }
+    // what happens when u win challenge
+    if (challengeWin) {
+      background(0);
+      fill(0, 255, 0);
+      textSize(60);
+      text("You won!", 50, 100);
+      fill(0, 255, 0);
+      textSize(35);
+      text("Press space to play again", 50, 160);
+      return;
+    }
+    // build mode
+    if (buildMode) {
+      if (keyPressed) {
+        if (keyCode == LEFT) {
+          linex -= 2;
+        }
+        if (keyCode == RIGHT) {
+          linex += 2;
+        }
+        if (keyCode == UP) {
+          liney -= 2;
+        }
+        if (keyCode == DOWN) {
+          liney += 2;
+        }
+      }
+    }
+    if (buildMode) {
+      background(255,0,0);
+      fill(0);
+      rect(linex, liney, linew, lineh);
+     fill(255);
+   textSize(16);
+  text("Build Mode - Use arrows to move line, SPACE to lock, B to play", 20, 20);
+    }
 
-    time += 1;
+    // setup of actual maze
     background(0);
 
     fill(255, 0, 0);
@@ -122,7 +154,7 @@ if (challengeWin) {
     rect(420, 450, 40, 550);
 
     fill(0);
-    rect(15, 400, 100, 90);
+    rect(15, 400, 100, 80);
 
     fill(r, g, b);
     circle(x, y, size);
@@ -135,8 +167,7 @@ if (challengeWin) {
     textSize(45);
     text("wins:" + wins, 200, 400);
 
-
-
+    // the name of speeds
     if (newSpeed == 1)
       difficulty = "Slow";
     if (newSpeed == 2)
@@ -150,6 +181,7 @@ if (challengeWin) {
     textSize(30);
     text("Speed: " + difficulty, 10, 30);
 
+    // challenge mode
     if (challengeMode) {
       challengeTimer--;
       fill(255);
@@ -157,15 +189,16 @@ if (challengeWin) {
       text("Time: " + (challengeTimer / 60), 400, 35);
 
       if (challengeTimer <= 0) {
-        challengeMode=false;
-        challengeOver=true;
+        challengeMode = false;
+        challengeOver = true;
         x = xstart;
         y = ystart;
-        deaths++;}}
+        deaths++;
+      }
+    }
 
-  
-
-    if (!startScreen && !colorScreen && !challengeOver) {
+    // movement
+    if (!startScreen && !colorScreen && !challengeOver && !won && !challengeWin) {
       if (left == true) {
         x -= speed;
       }
@@ -179,8 +212,9 @@ if (challengeWin) {
         x += speed;
       }
     }
+    // winning
     if (won && !challengeWin && !challengeMode) {
-  
+
       fill(255, 255, 255);
       textSize(45);
       text("You won after " + prevDeaths + " deaths!", 25, 250);
@@ -191,7 +225,7 @@ if (challengeWin) {
       }
       // sam fine helped me with this
     }
-
+    // when the ball touches a specfic color it does _
     int currentColor = get((int) x, (int) y);
     // top
     currentColor = get((int) x, (int) (y - size / 2));
@@ -264,11 +298,11 @@ if (challengeWin) {
       x = xstart;
       y = ystart;
       prevDeaths = deaths;
-      deaths = 0;         
+      deaths = 0;
       winTimer = 0;
       if (challengeMode) {
-        challengeMode=false;
-        challengeWin=true;
+        challengeMode = false;
+        challengeWin = true;
       }
     }
   }
@@ -277,6 +311,7 @@ if (challengeWin) {
   // a specific color it does somthing, the green makes a text and
   // red makes ball go back to begining.
 
+  // movement
   public void keyPressed() {
     if (keyCode == UP) {
       up = true;
@@ -287,15 +322,14 @@ if (challengeWin) {
     } else if (keyCode == RIGHT) {
       right = true;
     }
-    
-    if (challengeOver && key == ' ' ) {
-      challengeOver=false;
-      challengeMode=true;
-      challengeTimer=challengeTime;
-      x=xstart;
-      y=ystart;
+    // when you click a key it does somthing
+    if (challengeOver && key == ' ') {
+      challengeOver = false;
+      challengeMode = true;
+      challengeTimer = challengeTime;
+      x = xstart;
+      y = ystart;
       return;
-
 
     }
 
@@ -307,13 +341,13 @@ if (challengeWin) {
       return;
     }
     if (startScreen && key == '4') {
-    startScreen = false;
-    colorScreen = false;
-    challengeMode = true;
-    challengeTimer = challengeTime; 
-    x = xstart;
-    y = ystart;
-}
+      startScreen = false;
+      colorScreen = false;
+      challengeMode = true;
+      challengeTimer = challengeTime;
+      x = xstart;
+      y = ystart;
+    }
 
     if (colorScreen && key == ' ') {
       r = (int) random(0, 255);
@@ -321,13 +355,13 @@ if (challengeWin) {
       b = (int) random(0, 255);
       return;
     }
-    if (challengeWin && key==' ') {
-      challengeWin=false;
-      won=false;
-      challengeMode=true;
-      challengeTimer=challengeTime;
-      x=xstart;
-      y=ystart;
+    if (challengeWin && key == ' ') {
+      challengeWin = false;
+      won = false;
+      challengeMode = true;
+      challengeTimer = challengeTime;
+      x = xstart;
+      y = ystart;
       return;
     }
 
@@ -341,12 +375,12 @@ if (challengeWin) {
 
     if (key == '3') {
       startScreen = true;
-      colorScreen = false; 
+      colorScreen = false;
       challengeMode = false;
       challengeWin = false;
       challengeOver = false;
       wins = 0;
-      deaths=0;
+      deaths = 0;
       return;
     }
 
@@ -378,9 +412,15 @@ if (challengeWin) {
         newSpeed = 1;
       }
     }
-
+    
+  if (key == 'b' ) {
+    buildMode = !buildMode;
   }
+}
 
+  
+
+  // movement
   public void keyReleased() {
     if (keyCode == UP) {
       up = false;
