@@ -23,7 +23,6 @@ public class App extends PApplet {
   boolean startScreen = true; // the intro screen
   boolean colorScreen = false; // the screen where u change color
   boolean challengeMode = false; // the challenge mode
-  boolean buildMode = false; // Build mode
 
   int newSpeed = 2; // new speed after you press s or d
   String difficulty = ""; // the speed it displays
@@ -33,15 +32,15 @@ public class App extends PApplet {
   int g = 0;
   int b = 255;
 
-  int challengeTime = 1000; // amount of time u have to complete challenge time (frames)
+  int challengeTime = 600; // amount of time u have to complete challenge time (frames)
   int challengeTimer = 0; // timer for the challenge time
   boolean challengeOver = false; // when you lose the challenge
   boolean challengeWin = false; // when you win the challenge
 
-  float linex = 100;
-  float liney = 100;
-  float linew = 80;
-  float lineh = 10;
+  float obsticleX, obsticleY;  //position of obsticle
+  float obsticleSize = 50; //size of obstcle
+  int obstilceTimer = 0; //counts how long its visivale
+  int obsticleTime = 180; //shown for 3 second 
 
   public void setup() {
 
@@ -109,31 +108,6 @@ public class App extends PApplet {
       text("Press space to play again", 50, 160);
       return;
     }
-    // build mode
-    if (buildMode) {
-      if (keyPressed) {
-        if (keyCode == LEFT) {
-          linex -= 2;
-        }
-        if (keyCode == RIGHT) {
-          linex += 2;
-        }
-        if (keyCode == UP) {
-          liney -= 2;
-        }
-        if (keyCode == DOWN) {
-          liney += 2;
-        }
-      }
-    }
-    if (buildMode) {
-      background(255,0,0);
-      fill(0);
-      rect(linex, liney, linew, lineh);
-     fill(255);
-   textSize(16);
-  text("Build Mode - Use arrows to move line, SPACE to lock, B to play", 20, 20);
-    }
 
     // setup of actual maze
     background(0);
@@ -152,6 +126,21 @@ public class App extends PApplet {
     rect(360, 80, 60, 500);
     fill(0, 255, 0);
     rect(420, 450, 40, 550);
+    
+    obstilceTimer++;
+    if (obstilceTimer>obsticleTime) {
+      obsticleX = random(60,440);
+      obsticleY = random(60,440);
+      int color=get((int)obsticleX, (int) obsticleY);
+      while (red(color)==0 && green(color)==0 && blue(color)==0 ) {
+        obsticleX = random(60,440);
+         obsticleY = random(60,440);
+         color=get((int)obsticleX, (int) obsticleY);
+      }
+      obstilceTimer = 0;
+    }
+    fill(255,0,0);
+    rect(obsticleX, obsticleY, obsticleSize, obsticleSize);
 
     fill(0);
     rect(15, 400, 100, 80);
@@ -412,13 +401,8 @@ public class App extends PApplet {
         newSpeed = 1;
       }
     }
-    
-  if (key == 'b' ) {
-    buildMode = !buildMode;
-  }
-}
 
-  
+  }
 
   // movement
   public void keyReleased() {
