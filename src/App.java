@@ -37,8 +37,7 @@ public class App extends PApplet {
   boolean challengeOver = false; // when you lose the challenge
   boolean challengeWin = false; // when you win the challenge
 
-  float obsticleX, obsticleY;  //position of obsticle
-  float obsticleSize = 50; //size of obstcle
+  float linex, liney;
   int obstilceTimer = 0; //counts how long its visivale
   int obsticleTime = 180; //shown for 3 second 
 
@@ -127,20 +126,8 @@ public class App extends PApplet {
     fill(0, 255, 0);
     rect(420, 450, 40, 550);
     
-    obstilceTimer++;
-    if (obstilceTimer>obsticleTime) {
-      obsticleX = random(60,440);
-      obsticleY = random(60,440);
-      int color=get((int)obsticleX, (int) obsticleY);
-      while (red(color)==0 && green(color)==0 && blue(color)==0 ) {
-        obsticleX = random(60,440);
-         obsticleY = random(60,440);
-         color=get((int)obsticleX, (int) obsticleY);
-      }
-      obstilceTimer = 0;
-    }
-    fill(255,0,0);
-    rect(obsticleX, obsticleY, obsticleSize, obsticleSize);
+
+    
 
     fill(0);
     rect(15, 400, 100, 80);
@@ -216,17 +203,17 @@ public class App extends PApplet {
     }
     // when the ball touches a specfic color it does _
     int currentColor = get((int) x, (int) y);
+    
     // top
-    currentColor = get((int) x, (int) (y - size / 2));
-    if (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0) {
+    if (collision(x, y - size / 2)) {
       x = xstart;
       y = ystart;
       deaths++;
     }
 
+
     // bottum
-    currentColor = get((int) x, (int) (y + size / 2));
-    if (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0) {
+    if (collision(x, y + size / 2)) {
       x = xstart;
       y = ystart;
       deaths++;
@@ -234,46 +221,41 @@ public class App extends PApplet {
     }
     // side
     currentColor = get((int) (x - size / 2), (int) y);
-    if (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0) {
+    if (collision(x - size / 2, y)) {
       x = xstart;
       y = ystart;
       deaths++;
 
     }
     // side
-    currentColor = get((int) (x + size / 2), (int) y);
-    if (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0) {
+    if (collision(x +size / 2, y )) {
       x = xstart;
       y = ystart;
       deaths++;
 
     }
     // corner
-    currentColor = get((int) (x - size / 2), (int) (y - size / 2));
-    if (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0) {
+    
+    if (collision(x - size / 2, y - size / 2)) {
       x = xstart;
       y = ystart;
       deaths++;
 
     }
     // corner
-    currentColor = get((int) (x + size / 2), (int) (y - size / 2));
-    if (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0) {
+    if (collision(x + size / 2, y - size / 2)) {
       x = xstart;
       y = ystart;
       deaths++;
     }
     // corner
-    currentColor = get((int) (x - size / 2), (int) (y + size / 2));
-    if (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0) {
+    if(collision(x - size / 2, y + size / 2)){
       x = xstart;
       y = ystart;
       deaths++;
-
     }
     // corner
-    currentColor = get((int) (x + size / 2), (int) (y + size / 2));
-    if (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0) {
+    if (collision(x + size / 2, y + size / 2)) {
       x = xstart;
       y = ystart;
       deaths++;
@@ -296,9 +278,13 @@ public class App extends PApplet {
     }
   }
 
-  // used chat gpt for only the part where when the ball touches
-  // a specific color it does somthing, the green makes a text and
-  // red makes ball go back to begining.
+  public boolean collision(float x, float y){
+    int currentColor = get((int) (x), (int) (y));
+   return (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0);
+   
+  }
+
+
 
   // movement
   public void keyPressed() {
@@ -394,6 +380,7 @@ public class App extends PApplet {
 
     {
       if (key == 'd') {
+        println("");
         newSpeed--;
         speed = newSpeed;
       }
