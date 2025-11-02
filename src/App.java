@@ -7,7 +7,7 @@ public class App extends PApplet {
 
   float x = 40; // the x position of ball
   float y = 460; // the y position of ball
-  float size = 20; // size of ball
+  float size = 17; // size of ball
   float speed = 2; // starting speed of ball
   float xstart = 60; // starting x positiion of ball
   float ystart = 440; // starting y positiion of ball
@@ -37,9 +37,9 @@ public class App extends PApplet {
   boolean challengeOver = false; // when you lose the challenge
   boolean challengeWin = false; // when you win the challenge
 
-  float linex, liney;
-  int obstilceTimer = 0; //counts how long its visivale
-  int obsticleTime = 180; //shown for 3 second 
+  int obstilceTimer = 0; // counts how long its visivale
+  int obsticleTime = 120;
+  boolean obsticleShown = false;
 
   public void setup() {
 
@@ -55,12 +55,12 @@ public class App extends PApplet {
     if (startScreen) {
       fill(255);
       textSize(80);
-      text("Maze Game", 70, 100);
+      text("Maze Game", 65, 100);
       textSize(30);
-      text("Press 1 to play", 90, 150);
+      text("Press 1 to play", 65, 150);
       textSize(30);
-      text("Press 2 to change color", 90, 180);
-      text("Press 4 for Challenge Mode", 90, 210);
+      text("Press 2 to change color", 65, 180);
+      text("Press 4 for timed challenge mode", 65, 210);
       fill(255, 0, 0);
       textSize(29);
       text("How to play:", 90, 260);
@@ -82,6 +82,7 @@ public class App extends PApplet {
       text("Press 1 to start game", 80, 180);
       text("Press 3 to return home", 80, 210);
       fill(r, g, b);
+      stroke(0);
       circle(250, 250, size);
       return;
     }
@@ -125,15 +126,37 @@ public class App extends PApplet {
     rect(360, 80, 60, 500);
     fill(0, 255, 0);
     rect(420, 450, 40, 550);
-    
-
-    
 
     fill(0);
     rect(15, 400, 100, 80);
 
     fill(r, g, b);
     circle(x, y, size);
+    if (!challengeMode) {
+
+      // obsticles
+      obstilceTimer++;
+
+      if (obstilceTimer > (obsticleTime*2)) {
+        obstilceTimer = 0;
+      }
+
+      if (obstilceTimer < obsticleTime) {
+        obsticleShown = true;
+      } else {
+        obsticleShown = false;
+      }
+
+      if (obsticleShown) {
+        stroke(255, 0, 0);
+        strokeWeight(2);
+        line(400, 10, 400, 200);
+        line(40, 350, 90, 350);
+        line(40, 150, 90, 150);
+        line(220, 20, 220, 100);
+        line(400, 400, 500, 400);
+      }
+    }
 
     fill(255, 255, 255);
     textSize(30);
@@ -203,14 +226,13 @@ public class App extends PApplet {
     }
     // when the ball touches a specfic color it does _
     int currentColor = get((int) x, (int) y);
-    
+
     // top
     if (collision(x, y - size / 2)) {
       x = xstart;
       y = ystart;
       deaths++;
     }
-
 
     // bottum
     if (collision(x, y + size / 2)) {
@@ -228,14 +250,14 @@ public class App extends PApplet {
 
     }
     // side
-    if (collision(x +size / 2, y )) {
+    if (collision(x + size / 2, y)) {
       x = xstart;
       y = ystart;
       deaths++;
 
     }
     // corner
-    
+
     if (collision(x - size / 2, y - size / 2)) {
       x = xstart;
       y = ystart;
@@ -249,7 +271,7 @@ public class App extends PApplet {
       deaths++;
     }
     // corner
-    if(collision(x - size / 2, y + size / 2)){
+    if (collision(x - size / 2, y + size / 2)) {
       x = xstart;
       y = ystart;
       deaths++;
@@ -278,13 +300,10 @@ public class App extends PApplet {
     }
   }
 
-  public boolean collision(float x, float y){
+  public boolean collision(float x, float y) {
     int currentColor = get((int) (x), (int) (y));
-   return (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0);
-   
+    return (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0);
   }
-
-
 
   // movement
   public void keyPressed() {
@@ -386,6 +405,9 @@ public class App extends PApplet {
       }
       if (newSpeed < 1) {
         newSpeed = 1;
+      }
+      if (speed == 0) {
+        speed = 1;
       }
     }
 
