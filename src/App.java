@@ -1,430 +1,144 @@
+import java.util.ArrayList;
+
 import processing.core.*;
 
 public class App extends PApplet {
+  Player player;
+  ArrayList<Obstacle> obstacles;
+  ArrayList<Coin> coins;
+
+  int score = 0;
+  boolean gameOver = false;
+
+  float obstacleTimer = 0;
+   float coinTimer = 0;
+
+  float obstacleSpeed = 5;
+  float coinSpeed = 5;
+  int lastScore = 0;
+
+  float ObstacleSpawnRate = (int)random(50, 100);
+  float CoinSpawnRate = (int)random(200, 300);
+
   public static void main(String[] args) {
     PApplet.main("App");
   }
 
-  float x = 40; // the x position of ball
-  float y = 460; // the y position of ball
-  float size = 17; // size of ball
-  float speed = 2; // starting speed of ball
-  float xstart = 60; // starting x positiion of ball
-  float ystart = 440; // starting y positiion of ball
-
-  int deaths = 0; // # of deaths
-  int prevDeaths = 0; // # of previos deaths
-  int wins = 0; // # of wins
-  int winTimer = 0; // time stopped after winninng
-  boolean won = false; // tracking weather the player won
-
-  boolean left, up, down, right; // tracking which arrows are pressed
-
-  boolean startScreen = true; // the intro screen
-  boolean colorScreen = false; // the screen where u change color
-  boolean challengeMode = false; // the challenge mode
-
-  int newSpeed = 2; // new speed after you press s or d
-  String difficulty = ""; // the speed it displays
-
-  // color of circle
-  int r = 0;
-  int g = 0;
-  int b = 255;
-
-  int challengeTime = 600; // amount of time u have to complete challenge time (frames)
-  int challengeTimer = 0; // timer for the challenge time
-  boolean challengeOver = false; // when you lose the challenge
-  boolean challengeWin = false; // when you win the challenge
-
-  int obstilceTimer = 0; // counts how long its visivale
-  int obsticleTime = 120;
-  boolean obsticleShown = false;
-
-  public void setup() {
-
+  public void settings() {
+    size(1000, 400);
   }
 
-  public void settings() {
-    size(500, 500);
+  public void setup() {
+    player = new Player(this, 100, 950);
+    obstacles = new ArrayList<Obstacle>();
+    coins = new ArrayList<Coin>();
+
   }
 
   public void draw() {
-    // the start screen
-    background(0);
-    if (startScreen) {
-      fill(255);
-      textSize(80);
-      text("Maze Game", 65, 100);
-      textSize(30);
-      text("Press 1 to play", 65, 150);
-      textSize(30);
-      text("Press 2 to change color", 65, 180);
-      text("Press 4 for timed challenge mode", 65, 210);
-      fill(255, 0, 0);
-      textSize(29);
-      text("How to play:", 90, 260);
-      textSize(20);
-      text("Use arrows to move", 90, 280);
-      textSize(20);
-      text("Press 's' to speed up, press 'd' to slow down", 90, 300);
+    background(30);
+    fill(200);
+    rect(0, 390, 1000, 10);
 
-      return;
-    }
-    // screen to change you color
-    if (colorScreen) {
-      fill(255);
-      textSize(50);
-      text("Choose Your Color", 60, 100);
-      textSize(30);
-      text("Press space bar for new color", 70, 150);
-      textSize(20);
-      text("Press 1 to start game", 80, 180);
-      text("Press 3 to return home", 80, 210);
-      fill(r, g, b);
-      stroke(0);
-      circle(250, 250, size);
-      return;
-    }
-    // what happens when you lose challenge
-    if (challengeOver) {
-      background(0);
-      fill(255, 0, 0);
-      textSize(60);
-      text("Time up!", 50, 100);
-      fill(255, 0, 0);
-      textSize(35);
-      text("Press space to try again", 50, 160);
-      return;
-    }
-    // what happens when u win challenge
-    if (challengeWin) {
-      background(0);
-      fill(0, 255, 0);
-      textSize(60);
-      text("You won!", 50, 100);
-      fill(0, 255, 0);
-      textSize(35);
-      text("Press space to play again", 50, 160);
-      return;
-    }
-
-    // setup of actual maze
-    background(0);
-
-    fill(255, 0, 0);
-    noStroke();
-    rect(0, 0, 500, 40);
-    rect(0, 0, 40, 500);
-    rect(0, 460, 500, 40);
-    rect(500 - 40, 0, 40, 500);
-
-    rect(80, 80, 150, 500);
-    rect(270, -250, 50, 500);
-    rect(230, 290, 120, 500);
-    rect(290, 290, 120, 500);
-    rect(360, 80, 60, 500);
-    fill(0, 255, 0);
-    rect(420, 450, 40, 550);
-
-    fill(0);
-    rect(15, 400, 100, 80);
-
-    fill(r, g, b);
-    circle(x, y, size);
-    if (!challengeMode) {
-
-      // obsticles
-      obstilceTimer++;
-
-      if (obstilceTimer > (obsticleTime*2)) {
-        obstilceTimer = 0;
-      }
-
-      if (obstilceTimer < obsticleTime) {
-        obsticleShown = true;
-      } else {
-        obsticleShown = false;
-      }
-
-      if (obsticleShown) {
-        stroke(255, 0, 0);
-        strokeWeight(2);
-        line(400, 10, 400, 200);
-        line(40, 350, 90, 350);
-        line(40, 150, 90, 150);
-        line(220, 20, 220, 100);
-        line(400, 400, 500, 400);
-      }
-    }
-
-    fill(255, 255, 255);
-    textSize(30);
-    text("Press 3 to return home", 120, 450);
-
-    fill(255, 255, 255);
-    textSize(45);
-    text("wins:" + wins, 200, 400);
-
-    // the name of speeds
-    if (newSpeed == 1)
-      difficulty = "Slow";
-    if (newSpeed == 2)
-      difficulty = "Medium";
-    if (newSpeed == 3)
-      difficulty = "Fast";
-    if (newSpeed == 4)
-      difficulty = "Extra Fast";
-
-    fill(255);
-    textSize(30);
-    text("Speed: " + difficulty, 10, 30);
-
-    // challenge mode
-    if (challengeMode) {
-      challengeTimer--;
-      fill(255);
-      textSize(28);
-      text("Time: " + (challengeTimer / 60), 400, 35);
-
-      if (challengeTimer <= 0) {
-        challengeMode = false;
-        challengeOver = true;
-        x = xstart;
-        y = ystart;
-        deaths++;
-      }
-    }
-
-    // movement
-    if (!startScreen && !colorScreen && !challengeOver && !won && !challengeWin) {
-      if (left == true) {
-        x -= speed;
-      }
-      if (up == true) {
-        y -= speed;
-      }
-      if (down == true) {
-        y += speed;
-      }
-      if (right == true) {
-        x += speed;
-      }
-    }
-    // winning
-    if (won && !challengeWin && !challengeMode) {
-
-      fill(255, 255, 255);
-      textSize(45);
-      text("You won after " + prevDeaths + " deaths!", 25, 250);
-      winTimer++;
-      if (winTimer > 180) {
-        won = false;
-        winTimer = 0;
-      }
-      // sam fine helped me with this
-    }
-    // when the ball touches a specfic color it does _
-    int currentColor = get((int) x, (int) y);
-
-    // top
-    if (collision(x, y - size / 2)) {
-      x = xstart;
-      y = ystart;
-      deaths++;
-    }
-
-    // bottum
-    if (collision(x, y + size / 2)) {
-      x = xstart;
-      y = ystart;
-      deaths++;
-
-    }
-    // side
-    currentColor = get((int) (x - size / 2), (int) y);
-    if (collision(x - size / 2, y)) {
-      x = xstart;
-      y = ystart;
-      deaths++;
-
-    }
-    // side
-    if (collision(x + size / 2, y)) {
-      x = xstart;
-      y = ystart;
-      deaths++;
-
-    }
-    // corner
-
-    if (collision(x - size / 2, y - size / 2)) {
-      x = xstart;
-      y = ystart;
-      deaths++;
-
-    }
-    // corner
-    if (collision(x + size / 2, y - size / 2)) {
-      x = xstart;
-      y = ystart;
-      deaths++;
-    }
-    // corner
-    if (collision(x - size / 2, y + size / 2)) {
-      x = xstart;
-      y = ystart;
-      deaths++;
-    }
-    // corner
-    if (collision(x + size / 2, y + size / 2)) {
-      x = xstart;
-      y = ystart;
-      deaths++;
-
-    }
-    // win
-    currentColor = get((int) (x), (int) (y + size / 2));
-    if (green(currentColor) == 255 && red(currentColor) == 0 && blue(currentColor) == 0) {
-      wins++;
-      won = true;
-      x = xstart;
-      y = ystart;
-      prevDeaths = deaths;
-      deaths = 0;
-      winTimer = 0;
-      if (challengeMode) {
-        challengeMode = false;
-        challengeWin = true;
-      }
+    if (!gameOver) {
+      player.update();
+      player.display();
+      showObstaclesAndCoins();
+      updateObstaclesAndCoins();
+      collision();
+      displayScore();
+      speedUp();
+    } else {
+     endScreen();
     }
   }
 
-  public boolean collision(float x, float y) {
-    int currentColor = get((int) (x), (int) (y));
-    return (red(currentColor) == 255 && green(currentColor) == 0 && blue(currentColor) == 0);
-  }
-
-  // movement
   public void keyPressed() {
-    if (keyCode == UP) {
-      up = true;
-    } else if (keyCode == DOWN) {
-      down = true;
-    } else if (keyCode == LEFT) {
-      left = true;
-    } else if (keyCode == RIGHT) {
-      right = true;
+    if (key == ' ') {
+      player.jump();
     }
-    // when you click a key it does somthing
-    if (challengeOver && key == ' ') {
-      challengeOver = false;
-      challengeMode = true;
-      challengeTimer = challengeTime;
-      x = xstart;
-      y = ystart;
-      return;
-
+    if (gameOver && key == 'a') {
+      resetGame();
     }
-
-    if (startScreen && key == '1') {
-      startScreen = false;
-      colorScreen = false;
-      x = xstart;
-      y = ystart;
-      return;
-    }
-    if (startScreen && key == '4') {
-      startScreen = false;
-      colorScreen = false;
-      challengeMode = true;
-      challengeTimer = challengeTime;
-      x = xstart;
-      y = ystart;
-    }
-
-    if (colorScreen && key == ' ') {
-      r = (int) random(0, 255);
-      g = (int) random(0, 255);
-      b = (int) random(0, 255);
-      return;
-    }
-    if (challengeWin && key == ' ') {
-      challengeWin = false;
-      won = false;
-      challengeMode = true;
-      challengeTimer = challengeTime;
-      x = xstart;
-      y = ystart;
-      return;
-    }
-
-    if (colorScreen && key == '1') {
-      colorScreen = false;
-      startScreen = false;
-      x = xstart;
-      y = ystart;
-      return;
-    }
-
-    if (key == '3') {
-      startScreen = true;
-      colorScreen = false;
-      challengeMode = false;
-      challengeWin = false;
-      challengeOver = false;
-      wins = 0;
-      deaths = 0;
-      return;
-    }
-
-    if (startScreen && key == '2') {
-      startScreen = false;
-      colorScreen = true;
-      return;
-    }
-    if (!startScreen && !colorScreen)
-
-    {
-      if (key == 's') {
-        newSpeed++;
-        speed = newSpeed;
-        if (newSpeed > 4) {
-          newSpeed = 4;
-        }
-      }
-    }
-
-    if (!startScreen && !colorScreen)
-
-    {
-      if (key == 'd') {
-        println("");
-        newSpeed--;
-        speed = newSpeed;
-      }
-      if (newSpeed < 1) {
-        newSpeed = 1;
-      }
-      if (speed == 0) {
-        speed = 1;
-      }
-    }
-
   }
 
-  // movement
-  public void keyReleased() {
-    if (keyCode == UP) {
-      up = false;
-    } else if (keyCode == DOWN) {
-      down = false;
-    } else if (keyCode == LEFT) {
-      left = false;
-    } else if (keyCode == RIGHT) {
-      right = false;
-    }
+  public void showObstaclesAndCoins() {
+    obstacleTimer++;
+    coinTimer++;
 
+    if (obstacleTimer >= ObstacleSpawnRate ) {
+      obstacles.add(new Obstacle(this, 1000, 390, 40, obstacleSpeed));
+       obstacleTimer = 0;
+         ObstacleSpawnRate = (int) random(60, 120);
+    }
+    if (coinTimer >= CoinSpawnRate) {
+      coins.add(new Coin(this, 1000, 390, 20, coinSpeed));
+      coinTimer = 0;
+        CoinSpawnRate = (int) random(240, 300);
+
+    }
   }
 
+  public void updateObstaclesAndCoins() {
+    for (int i = obstacles.size() - 1; i >= 0; i--) {
+      Obstacle ob = obstacles.get(i);
+      ob.update();
+      ob.display();
+      if (ob.isOffScreen())
+        obstacles.remove(i);
+    }
+    for (int i = coins.size() - 1; i >= 0; i--) {
+      Coin coin = coins.get(i);
+      coin.update();
+      coin.display();
+
+    }
+  }
+
+  public void displayScore() {
+    fill(255);
+    textSize(24);
+    text("Score: " + score, 10, 30);
+  }
+
+  public void resetGame() {
+    gameOver = false;
+    score = 0;
+    obstacleSpeed = 5;
+    coinSpeed = 5;
+    lastScore = 0;
+    obstacles.clear();
+    coins.clear();
+    player = new Player(this, 100, 950);
+  }
+
+  public void collision() {
+    for (Obstacle ob : obstacles)
+      if (ob.checkCollision(player)) {
+        gameOver = true;
+      }
+    for (int i = coins.size() - 1; i >= 0; i--) {
+      Coin coin = coins.get(i);
+      if (coin.checkCollision(player)) {
+        coins.remove(i);
+        score++;
+      }
+    }
+  }
+  public void endScreen(){
+      fill(255, 0, 0);
+      textSize(48);
+      text("Game over", 50, 150);
+      textSize(24);
+      text("Final score: " + score, 50, 200);
+      text("Press a to play again", 50, 250);
+
+  }
+  public void speedUp(){
+    if (score!=lastScore && score%5==0) {
+      coinSpeed+=2;
+      obstacleSpeed+=2;
+      lastScore=score;
+    }
+  }
 }
